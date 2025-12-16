@@ -151,7 +151,7 @@ st.divider()
 # =====================================================
 # INPUT TEKS
 # =====================================================
-st.subheader("📝 Masukkan Ulasan Pengguna")
+st.subheader("Masukkan Ulasan Pengguna")
 
 input_text = st.text_area(
     "Contoh: Aplikasi JogjaKita sangat membantu dan drivernya ramah",
@@ -226,6 +226,7 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
 
