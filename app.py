@@ -17,11 +17,37 @@ st.set_page_config(
 st.markdown(
     """
     <style>
+    /* Background utama */
     .stApp {
-        background-color: white;
+        background-color: #ffffff;
+        color: #000000;
     }
-    section[data-testid="stSidebar"] {
-        background-color: white;
+
+    /* Judul & teks umum */
+    h1, h2, h3, h4, h5, h6, p, span, label {
+        color: #000000 !important;
+    }
+
+    /* Text area & input */
+    textarea, input {
+        background-color: #f9f9f9 !important;
+        color: #000000 !important;
+        border: 1px solid #cccccc !important;
+    }
+
+    /* Button */
+    button {
+        color: #000000 !important;
+    }
+
+    /* Info / warning / success box */
+    .stAlert {
+        color: #000000 !important;
+    }
+
+    /* Dataframe background */
+    .stDataFrame {
+        background-color: #ffffff;
     }
     </style>
     """,
@@ -167,4 +193,5 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
