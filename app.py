@@ -14,6 +14,10 @@ st.set_page_config(
     page_icon="📊",
     layout="centered"
 )
+
+# =====================================================
+# STYLE (CSS)
+# =====================================================
 st.markdown(
     """
     <style>
@@ -33,11 +37,17 @@ st.markdown(
         background-color: #f9f9f9 !important;
         color: #000000 !important;
         border: 1px solid #cccccc !important;
+        border-radius: 8px !important;
     }
 
-    /* ===== TOMBOL ===== */
+    /* KURSOR TEKS (INI YANG KAMU MINTA) */
+    textarea {
+        caret-color: #000000 !important;
+    }
+
+    /* Tombol */
     div.stButton > button {
-        background-color: #e53935 !important;   /* merah JogjaKita */
+        background-color: #e53935 !important;
         color: white !important;
         border-radius: 8px;
         padding: 0.5em 1.2em;
@@ -47,19 +57,14 @@ st.markdown(
 
     div.stButton > button:hover {
         background-color: #c62828 !important;
-        color: white !important;
-    }
-
-    /* Info / warning box */
-    .stAlert {
-        color: #000000 !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 # =====================================================
-# LOAD MODEL & TF-IDF (CACHED)
+# LOAD MODEL & TF-IDF
 # =====================================================
 @st.cache_resource
 def load_model():
@@ -70,30 +75,26 @@ def load_model():
 model, vectorizer = load_model()
 
 # =====================================================
-# PREPROCESSING (SAMA DENGAN TRAINING)
+# PREPROCESSING
 # =====================================================
 stemmer = StemmerFactory().create_stemmer()
 
 stop_factory = StopWordRemoverFactory()
 stopwords = set(stop_factory.get_stop_words())
-extra_stopwords = {
-    "nya","sih","kok","lah","dong","nih","deh","banget","ya","pun"
-}
-stopwords.update(extra_stopwords)
+stopwords.update({"nya","sih","kok","lah","dong","nih","deh","banget","ya","pun"})
 
 def preprocess(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
 
-    tokens = text.split()
-    tokens = [w for w in tokens if w not in stopwords and len(w) > 2]
-    tokens = [stemmer.stem(w) for w in tokens]
+    tokens = [stemmer.stem(w) for w in text.split()
+              if w not in stopwords and len(w) > 2]
 
     return " ".join(tokens)
 
 # =====================================================
-# SESSION STATE (RIWAYAT)
+# SESSION STATE
 # =====================================================
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -104,29 +105,32 @@ if "history" not in st.session_state:
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    st.image("logo.png", width=120)
+    st.image("logo.png", width=110)
 
 with col2:
     st.markdown(
         """
         <h2>Analisis Sentimen Ulasan JogjaKita</h2>
-        <p>Menggunakan Algoritma <b>Support Vector Machine (SVM)</b> </p>
+        <p>Menggunakan Algoritma <b>Support Vector Machine (SVM)</b></p>
         """,
         unsafe_allow_html=True
     )
+
 st.divider()
 
 # =====================================================
 # INPUT TEKS
 # =====================================================
 st.subheader("📝 Masukkan Ulasan Pengguna")
+
 input_text = st.text_area(
     "Contoh: Aplikasi JogjaKita sangat membantu dan drivernya ramah",
-    height=120
+    height=120,
+    placeholder="Ketik ulasan pengguna di sini..."
 )
 
 # =====================================================
-# TOMBOL PREDIKSI
+# PREDIKSI
 # =====================================================
 if st.button("🔍 Prediksi Sentimen"):
     if input_text.strip() == "":
@@ -136,24 +140,19 @@ if st.button("🔍 Prediksi Sentimen"):
         vector = vectorizer.transform([clean_text])
 
         pred_label = model.predict(vector)[0]
+        proba = model.predict_proba(vector)[0]
 
-        # Probabilitas (probability=True)
-        if hasattr(model, "predict_proba"):
-            proba = model.predict_proba(vector)[0]
-            prob_negatif = proba[0] * 100
-            prob_positif = proba[1] * 100
-        else:
-            prob_negatif = None
-            prob_positif = None
+        prob_negatif = proba[0] * 100
+        prob_positif = proba[1] * 100
 
         label_text = "Positif" if pred_label == 1 else "Negatif"
 
-        # Simpan ke riwayat
+        # Simpan riwayat
         st.session_state.history.append({
             "Ulasan": input_text,
             "Sentimen": label_text,
-            "Akurasi Positif (%)": round(prob_positif, 2) if prob_positif else "-",
-            "Akurasi Negatif (%)": round(prob_negatif, 2) if prob_negatif else "-"
+            "Probabilitas Positif (%)": round(prob_positif, 2),
+            "Probabilitas Negatif (%)": round(prob_negatif, 2)
         })
 
         st.divider()
@@ -164,13 +163,12 @@ if st.button("🔍 Prediksi Sentimen"):
         else:
             st.error("❌ Sentimen Negatif")
 
-        if prob_positif is not None:
-            st.markdown("### 📈 Probabilitas Prediksi")
-            st.write(f"**Positif : {prob_positif:.2f}%**")
-            st.progress(prob_positif / 100)
+        st.markdown("### 📈 Probabilitas Prediksi")
+        st.write(f"**Positif : {prob_positif:.2f}%**")
+        st.progress(prob_positif / 100)
 
-            st.write(f"**Negatif : {prob_negatif:.2f}%**")
-            st.progress(prob_negatif / 100)
+        st.write(f"**Negatif : {prob_negatif:.2f}%**")
+        st.progress(prob_negatif / 100)
 
 # =====================================================
 # RIWAYAT PREDIKSI
@@ -178,7 +176,7 @@ if st.button("🔍 Prediksi Sentimen"):
 st.divider()
 st.subheader("🗂️ Riwayat Prediksi")
 
-if len(st.session_state.history) > 0:
+if st.session_state.history:
     df_history = pd.DataFrame(st.session_state.history)
     st.dataframe(df_history, use_container_width=True)
 
@@ -198,5 +196,3 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
-
-
