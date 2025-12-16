@@ -219,6 +219,7 @@ if st.button("🔍 Prediksi Sentimen"):
     else:
         clean_text = preprocess(input_text)
         vector = vectorizer.transform([clean_text])
+
         pred_label = model.predict(vector)[0]
 
         if hasattr(model, "predict_proba"):
@@ -226,40 +227,38 @@ if st.button("🔍 Prediksi Sentimen"):
             prob_negatif = proba[0] * 100
             prob_positif = proba[1] * 100
         else:
-            prob_negatif = prob_positif = None
+            prob_negatif = prob_positif = 0
 
         label_text = "Positif" if pred_label == 1 else "Negatif"
+
+        # =====================
+        # TAMPILAN HASIL (HARUS DI SINI)
+        # =====================
+        st.markdown("<h4 class='section-title'>🧪 Hasil Prediksi</h4>", unsafe_allow_html=True)
+        st.markdown("<div class='result-card'>", unsafe_allow_html=True)
+
+        if pred_label == 1:
+            st.markdown("<div class='result-positive'>✅ Sentimen Positif</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='result-negative'>❌ Sentimen Negatif</div>", unsafe_allow_html=True)
+
+        st.write(f"**Positif : {prob_positif:.2f}%**")
+        st.progress(prob_positif / 100)
+
+        st.write(f"**Negatif : {prob_negatif:.2f}%**")
+        st.progress(prob_negatif / 100)
+
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # =====================
+        # SIMPAN KE RIWAYAT
+        # =====================
         st.session_state.history.append({
             "Ulasan": input_text,
             "Sentimen": label_text,
-            "Probabilitas Positif (%)": round(prob_positif, 2) if prob_positif is not None else "-",
-            "Probabilitas Negatif (%)": round(prob_negatif, 2) if prob_negatif is not None else "-",
+            "Probabilitas Positif (%)": round(prob_positif, 2),
+            "Probabilitas Negatif (%)": round(prob_negatif, 2)
         })
-
-        st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown("<h4 class='section-title'>🧪 Hasil Prediksi</h4>", unsafe_allow_html=True)
-
-st.markdown("<div class='result-card'>", unsafe_allow_html=True)
-
-if pred_label == 1:
-    st.markdown(
-        "<div class='result-positive'>✅ Sentimen Positif</div>",
-        unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        "<div class='result-negative'>❌ Sentimen Negatif</div>",
-        unsafe_allow_html=True
-    )
-
-st.write(f"**Positif : {prob_positif:.2f}%**")
-st.progress(prob_positif / 100)
-
-st.write(f"**Negatif : {prob_negatif:.2f}%**")
-st.progress(prob_negatif / 100)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
 # ================= RIWAYAT =================
 st.markdown("<hr>", unsafe_allow_html=True)
 st.markdown("<h4 class='section-title'>📂 Riwayat Prediksi</h4>", unsafe_allow_html=True)
@@ -288,6 +287,7 @@ st.caption(
 # CARD END
 # =====================================================
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
