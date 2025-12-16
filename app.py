@@ -58,6 +58,27 @@ st.markdown(
     div.stButton > button:hover {
         background-color: #c62828 !important;
     }
+    /* ===== HILANGKAN BAR HITAM STREAMLIT CLOUD ===== */
+
+/* Toolbar atas */
+div[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+/* Header utama */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+/* Decoration / Deploy bar */
+div[data-testid="stDecoration"] {
+    display: none !important;
+}
+
+/* Hilangkan padding atas bawaan */
+.block-container {
+    padding-top: 0rem !important;
+}
     </style>
     """,
     unsafe_allow_html=True
@@ -196,3 +217,4 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
