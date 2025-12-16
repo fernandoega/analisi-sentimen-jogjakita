@@ -131,13 +131,17 @@ st.markdown("<div class='main-card'>", unsafe_allow_html=True)
 
 # ================= HEADER =================
 col1, col2 = st.columns([1, 6])
+
 with col1:
     st.image("logo.png", width=80)
+
 with col2:
     st.markdown(
         """
         <h2 style="margin-bottom:6px;">Analisis Sentimen Ulasan JogjaKita</h2>
-        <p style="margin-top:0; color:#555;">Menggunakan Algoritma <b>Support Vector Machine (SVM)</b></p>
+        <p style="margin-top:0; color:#555;">
+        Menggunakan Algoritma <b>Support Vector Machine (SVM)</b>
+        </p>
         """,
         unsafe_allow_html=True
     )
@@ -214,3 +218,4 @@ st.caption(
 # CARD END
 # =====================================================
 st.markdown("</div>", unsafe_allow_html=True)
+
