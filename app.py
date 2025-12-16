@@ -115,6 +115,32 @@ div[data-testid="stDecoration"] {
 .block-container {
     padding-top: 1rem !important;
 }
+/* ===== CARD HASIL PREDIKSI ===== */
+.result-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-top: 15px;
+    background-color: #ffffff;
+}
+
+.result-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.result-positive {
+    color: #2e7d32;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.result-negative {
+    color: #c62828;
+    font-weight: 700;
+    font-size: 20px;
+}
     </style>
     """,
     unsafe_allow_html=True
@@ -211,15 +237,28 @@ if st.button("🔍 Prediksi Sentimen"):
         })
 
         st.markdown("<hr>", unsafe_allow_html=True)
-        st.subheader("📌 Hasil Prediksi")
-        st.success("✅ Sentimen Positif" if pred_label == 1 else "❌ Sentimen Negatif")
+        st.markdown("<h4 class='section-title'>🧪 Hasil Prediksi</h4>", unsafe_allow_html=True)
 
-        if prob_positif is not None:
-            st.markdown("### 📈 Probabilitas Prediksi")
-            st.write(f"**Positif : {prob_positif:.2f}%**")
-            st.progress(prob_positif / 100)
-            st.write(f"**Negatif : {prob_negatif:.2f}%**")
-            st.progress(prob_negatif / 100)
+st.markdown("<div class='result-card'>", unsafe_allow_html=True)
+
+if pred_label == 1:
+    st.markdown(
+        "<div class='result-positive'>✅ Sentimen Positif</div>",
+        unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        "<div class='result-negative'>❌ Sentimen Negatif</div>",
+        unsafe_allow_html=True
+    )
+
+st.write(f"**Positif : {prob_positif:.2f}%**")
+st.progress(prob_positif / 100)
+
+st.write(f"**Negatif : {prob_negatif:.2f}%**")
+st.progress(prob_negatif / 100)
+
+st.markdown("</div>", unsafe_allow_html=True)
 
 # ================= RIWAYAT =================
 st.markdown("<hr>", unsafe_allow_html=True)
@@ -249,6 +288,7 @@ st.caption(
 # CARD END
 # =====================================================
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 
