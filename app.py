@@ -14,7 +14,19 @@ st.set_page_config(
     page_icon="📊",
     layout="centered"
 )
-
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background-color: white;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 # =====================================================
 # LOAD MODEL & TF-IDF (CACHED)
 # =====================================================
@@ -155,3 +167,4 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
