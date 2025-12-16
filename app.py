@@ -34,11 +34,11 @@ st.markdown(
 
     /* Subtitle / deskripsi metode */
     .subtitle {
-    font-size: 30px;        /* BESARIN FONT */
-    font-weight: 500;
-    color: #333333;
-    margin-top: 4px;
-}
+        font-size: 30px;
+        font-weight: 500;
+        color: #333333;
+        margin-top: 4px;
+    }
 
     /* Text area & input */
     textarea, input {
@@ -140,7 +140,7 @@ with col2:
     st.markdown(
         """
         <h2>Analisis Sentimen Ulasan JogjaKita</h2>
-        <p class="subtitle">
+        <p class=".subtitle">
             Menggunakan Algoritma <b>Support Vector Machine (SVM)</b>
         </p>
         """,
@@ -227,6 +227,7 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
 
