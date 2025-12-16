@@ -31,6 +31,16 @@ st.markdown(
         color: #000000 !important;
     }
 
+    /* ===== HILANGKAN HEADER STREAMLIT ===== */
+        header[data-testid="stHeader"] {
+        display: none;
+        }
+
+        /* Hilangkan padding atas bawaan */
+        .stApp {
+        padding-top: 0rem;
+        }
+
     /* ===== CARD UTAMA ===== */
     .main-card {
         background-color: #ffffff;
@@ -218,4 +228,5 @@ st.caption(
 # CARD END
 # =====================================================
 st.markdown("</div>", unsafe_allow_html=True)
+
 
