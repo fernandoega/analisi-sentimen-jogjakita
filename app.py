@@ -25,11 +25,11 @@ st.markdown(
     /* Global */
     .stApp {
         background-color: #f5f6f8;
-        color: #F0F0F0;
+        color: #000000;
     }
 
     h1, h2, h3, h4 {
-        color: #0000;
+        color: #000000;
     }
 
     /* Card utama */
@@ -211,5 +211,3 @@ st.caption("""
 - Ekstraksi Fitur: TF-IDF (Unigram & Bigram)
 - Dataset: Google Play Store – Aplikasi JogjaKita
 """)
-
-
