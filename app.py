@@ -34,7 +34,7 @@ st.markdown(
 
     /* Subtitle / deskripsi metode */
 .subtitle {
-    font-size: 20px;        /* BESARIN FONT */
+    font-size: 30px;        /* BESARIN FONT */
     font-weight: 500;
     color: #333333;
     margin-top: 4px;
@@ -227,5 +227,6 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
