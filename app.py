@@ -84,7 +84,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.markdown("<div class='main-card'>", unsafe_allow_html=True)
+
 # =====================================================
 # LOAD MODEL & TF-IDF (CACHED)
 # =====================================================
@@ -124,10 +124,12 @@ def preprocess(text):
 # =====================================================
 if "history" not in st.session_state:
     st.session_state.history = []
-
+    
 # =====================================================
 # HEADER
 # =====================================================
+st.markdown("<div class='main-card'>", unsafe_allow_html=True)
+
 col1, col2 = st.columns([1, 6])
 
 with col1:
@@ -218,7 +220,7 @@ if len(st.session_state.history) > 0:
         st.rerun()
 else:
     st.info("Belum ada riwayat prediksi.")
-
+st.markdown("</div>", unsafe_allow_html=True)
 # =====================================================
 # FOOTER
 # =====================================================
@@ -229,7 +231,8 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
-st.markdown("</div>", unsafe_allow_html=True)
+
+
 
 
 
