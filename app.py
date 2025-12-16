@@ -23,7 +23,7 @@ st.markdown(
         color: #000000;
     }
 
-    /* Judul & teks umum */
+    /* Semua teks */
     h1, h2, h3, h4, h5, h6, p, span, label {
         color: #000000 !important;
     }
@@ -35,19 +35,24 @@ st.markdown(
         border: 1px solid #cccccc !important;
     }
 
-    /* Button */
-    button {
-        color: #000000 !important;
+    /* ===== TOMBOL ===== */
+    div.stButton > button {
+        background-color: #e53935 !important;   /* merah JogjaKita */
+        color: white !important;
+        border-radius: 8px;
+        padding: 0.5em 1.2em;
+        border: none;
+        font-weight: 600;
     }
 
-    /* Info / warning / success box */
+    div.stButton > button:hover {
+        background-color: #c62828 !important;
+        color: white !important;
+    }
+
+    /* Info / warning box */
     .stAlert {
         color: #000000 !important;
-    }
-
-    /* Dataframe background */
-    .stDataFrame {
-        background-color: #ffffff;
     }
     </style>
     """,
@@ -193,5 +198,6 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
