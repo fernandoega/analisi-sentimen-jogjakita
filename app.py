@@ -11,7 +11,6 @@ from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFacto
 # =====================================================
 st.set_page_config(
     page_title="Analisis Sentimen JogjaKita",
-    page_icon="📊",
     layout="centered"
 )
 
@@ -163,7 +162,7 @@ input_text = st.text_area(
 # =====================================================
 # PREDIKSI
 # =====================================================
-if st.button("🔍 Prediksi Sentimen"):
+if st.button("Prediksi Sentimen"):
     if input_text.strip() == "":
         st.warning("Silakan masukkan teks ulasan terlebih dahulu.")
     else:
@@ -187,14 +186,14 @@ if st.button("🔍 Prediksi Sentimen"):
         })
 
         st.divider()
-        st.subheader("📌 Hasil Prediksi")
+        st.subheader("Hasil Prediksi")
 
         if pred_label == 1:
-            st.success("✅ Sentimen Positif")
+            st.success("Sentimen Positif")
         else:
-            st.error("❌ Sentimen Negatif")
+            st.error("Sentimen Negatif")
 
-        st.markdown("### 📈 Probabilitas Prediksi")
+        st.markdown("### Probabilitas Prediksi")
         st.write(f"**Positif : {prob_positif:.2f}%**")
         st.progress(prob_positif / 100)
 
@@ -205,13 +204,13 @@ if st.button("🔍 Prediksi Sentimen"):
 # RIWAYAT PREDIKSI
 # =====================================================
 st.divider()
-st.subheader("🗂️ Riwayat Prediksi")
+st.subheader("Riwayat Prediksi")
 
 if st.session_state.history:
     df_history = pd.DataFrame(st.session_state.history)
     st.dataframe(df_history, use_container_width=True)
 
-    if st.button("🧹 Hapus Riwayat"):
+    if st.button("Hapus Riwayat"):
         st.session_state.history = []
         st.rerun()
 else:
@@ -227,6 +226,7 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
 
