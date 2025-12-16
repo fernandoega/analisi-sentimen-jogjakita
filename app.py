@@ -94,6 +94,27 @@ st.markdown(
         border: none;
         border-top: 1px solid #e6e6e6;
     }
+    /* ===== HILANGKAN SEMUA BAR ATAS STREAMLIT ===== */
+
+/* Toolbar utama */
+div[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+/* Header lama (fallback) */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+/* Menu Deploy / Fork */
+div[data-testid="stDecoration"] {
+    display: none !important;
+}
+
+/* Padding atas bawaan */
+.block-container {
+    padding-top: 1rem !important;
+}
     </style>
     """,
     unsafe_allow_html=True
@@ -228,5 +249,6 @@ st.caption(
 # CARD END
 # =====================================================
 st.markdown("</div>", unsafe_allow_html=True)
+
 
 
