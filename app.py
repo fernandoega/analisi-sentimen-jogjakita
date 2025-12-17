@@ -223,10 +223,11 @@ else:
 st.divider()
 st.caption("""
 ℹ️ **Informasi Model**
-- Algoritma : Support Vector Machine (Kernel RBF)
-- Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
+- Algoritma : Support Vector Machine 
+- Ekstraksi Fitur : TF-IDF 
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
 
