@@ -11,6 +11,7 @@ from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFacto
 # =====================================================
 st.set_page_config(
     page_title="Analisis Sentimen JogjaKita",
+    page_icon="analisis.png"
     layout="centered"
 )
 
@@ -226,6 +227,7 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF (Unigram & Bigram)
 - Dataset : Google Play Store – Aplikasi JogjaKita
 """)
+
 
 
 
