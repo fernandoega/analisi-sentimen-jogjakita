@@ -11,7 +11,7 @@ from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFacto
 # =====================================================
 st.set_page_config(
     page_title="Analisis Sentimen JogjaKita",
-    page_icon="analisis.png",
+    page_icon="analisis.png",   # pastikan file ada di repo
     layout="centered"
 )
 
@@ -56,7 +56,7 @@ st.markdown(
         background-color: #e53935 !important;
         color: white !important;
         border-radius: 8px;
-        padding: 0.5em 1.2em;
+        padding: 0.55em 1.4em;
         border: none;
         font-weight: 600;
     }
@@ -68,7 +68,7 @@ st.markdown(
     /* ===== CARD ===== */
     .card {
         background-color: #ffffff;
-        padding: 24px 28px;
+        padding: 26px 30px;
         border-radius: 16px;
         box-shadow: 0 8px 24px rgba(0,0,0,0.08);
         margin-bottom: 28px;
@@ -129,13 +129,14 @@ model, vectorizer = load_model()
 stemmer = StemmerFactory().create_stemmer()
 stop_factory = StopWordRemoverFactory()
 stopwords = set(stop_factory.get_stop_words())
-stopwords.update({"nya", "sih", "kok", "lah", "dong", "nih", "deh", "banget", "ya", "pun"})
+stopwords.update({"nya","sih","kok","lah","dong","nih","deh","banget","ya","pun"})
 
 def preprocess(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
-    tokens = [stemmer.stem(w) for w in text.split() if w not in stopwords and len(w) > 2]
+    tokens = [stemmer.stem(w) for w in text.split()
+              if w not in stopwords and len(w) > 2]
     return " ".join(tokens)
 
 # =====================================================
@@ -164,6 +165,10 @@ with col2:
     )
 
 st.divider()
+
+# =====================================================
+# DESKRIPSI SISTEM
+# =====================================================
 st.markdown(
     """
     <div class="card">
@@ -182,7 +187,7 @@ st.markdown(
 )
 
 # =====================================================
-# INPUT
+# INPUT ULASAN
 # =====================================================
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.markdown("<div class='section-title'>📝 Masukkan Ulasan Pengguna</div>", unsafe_allow_html=True)
@@ -196,7 +201,7 @@ input_text = st.text_area(
 st.markdown("</div>", unsafe_allow_html=True)
 
 # =====================================================
-# PREDIKSI
+# PREDIKSI (TANPA CARD KOSONG)
 # =====================================================
 if st.button("🔍 Prediksi Sentimen"):
     if input_text.strip() == "":
@@ -249,7 +254,7 @@ if st.button("🔍 Prediksi Sentimen"):
         st.markdown("</div>", unsafe_allow_html=True)
 
 # =====================================================
-# RIWAYAT
+# RIWAYAT PREDIKSI
 # =====================================================
 st.markdown("<div class='card'>", unsafe_allow_html=True)
 st.markdown("<div class='section-title'>🗂️ Riwayat Prediksi</div>", unsafe_allow_html=True)
@@ -275,4 +280,3 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF  
 - Dataset : Google Play Store – Aplikasi JogjaKita  
 """)
-
