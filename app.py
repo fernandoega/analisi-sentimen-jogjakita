@@ -11,45 +11,49 @@ from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFacto
 # =====================================================
 st.set_page_config(
     page_title="Analisis Sentimen JogjaKita",
-    page_icon="😊", # Menggunakan emoji agar lebih universal
+    page_icon="😊",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
 # =====================================================
-# STYLE (CSS) - DIPERBARUI
+# STYLE (CSS) - DIPERBARUI DAN DIPERBAIKI
 # =====================================================
 st.markdown(
     """
     <style>
-    /* Font Import (Opsional, untuk font yang lebih menarik) */
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-    /* General Styling */
     .stApp {
-        background-color: #f0f2f6; /* Background abu-abu muda yang lebih lembut */
-        font-family: 'Poppins', sans-serif; /* Menggunakan font Poppins */
+        background-color: #f0f2f6;
+        font-family: 'Poppins', sans-serif;
     }
     
-    /* Semua teks */
     h1, h2, h3, h4, h5, h6, p, span, label {
         color: #333333 !important;
     }
 
-    /* Gaya untuk "Kartu" */
+    /* Gaya untuk "Kartu" yang Ditingkatkan */
     .card {
         background-color: #ffffff;
-        padding: 25px;
+        padding: 30px;
         border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
         margin-bottom: 25px;
+        border: 1px solid #e2e8f0;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
     }
 
-    /* Gaya Khusus untuk Kartu Header */
     .hero-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradien ungu-biru */
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         text-align: center;
+        border: none; /* Hero card tidak perlu border */
     }
     
     .hero-card h1, .hero-card h2, .hero-card p {
@@ -63,7 +67,6 @@ st.markdown(
         margin-top: 5px;
     }
 
-    /* Gaya untuk Tombol Utama */
     div.stButton > button:first-child {
         background-color: #667eea !important;
         color: white !important;
@@ -81,7 +84,6 @@ st.markdown(
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
     }
     
-    /* Gaya untuk Tombol Sekunder (Hapus Riwayat) */
     .secondary-btn-container > button {
         background-color: transparent !important;
         color: #e53e3e !important;
@@ -94,7 +96,6 @@ st.markdown(
         background-color: #fff5f5 !important;
     }
 
-    /* Text area & input */
     .stTextArea textarea {
         background-color: #f7fafc !important;
         color: #2d3748 !important;
@@ -111,35 +112,72 @@ st.markdown(
         padding: 20px;
         border-radius: 10px;
         margin-top: 15px;
+        font-size: 24px;
+        font-weight: 600;
     }
     .result-positive {
-        background-color: #c6f6d5;
+        background-color: #b8f5d1; /* Warna hijau lebih kontras */
         color: #22543d;
-        font-size: 24px;
-        font-weight: 600;
     }
     .result-negative {
-        background-color: #fed7d7;
+        background-color: #ffcdd2; /* Warna merah lebih kontras */
         color: #742a2a;
-        font-size: 24px;
+    }
+
+    /* --- GAYA BARU UNTUK PROBABILITAS GABUNGAN --- */
+    .prob-container {
+        width: 100%;
+        background-color: #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 35px;
+        display: flex;
+        margin-top: 10px;
+    }
+    .prob-positive {
+        background-color: #48bb78; /* Hijau tua */
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: 600;
+        transition: width 0.5s ease-in-out;
     }
-    
-    /* Progress Bar Styling */
-    .stProgress > div > div > div > div {
-        background-color: #667eea;
+    .prob-negative {
+        background-color: #f56565; /* Merah tua */
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        transition: width 0.5s ease-in-out;
     }
-    
-    /* Styling Tabel Riwayat */
+
+    /* --- GAYA TABEL YANG DIPERBAIKI --- */
     .dataframe-container {
         max-height: 400px;
         overflow-y: auto;
-    }
-    .dataframe-container div[data-testid="stVerticalBlock"] {
-        padding-top: 0;
+        border-radius: 8px;
     }
     
-    /* Hilangkan elemen default Streamlit */
+    /* Style untuk header tabel */
+    .dataframe-container thead th {
+        background-color: #4a5568;
+        color: white;
+        font-weight: 600;
+        text-align: left !important;
+    }
+    
+    /* Style untuk baris tabel yang diwarnai */
+    .dataframe tbody tr:nth-child(even) {
+        background-color: #f7fafc;
+    }
+    
+    /* Aplikasi warna dari styler pandas */
+    .dataframe tbody tr td {
+        font-weight: 500;
+    }
+    
     div[data-testid="stToolbar"], header[data-testid="stHeader"], div[data-testid="stDecoration"] {
         display: none !important;
     }
@@ -189,7 +227,7 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # =====================================================
-# HEADER - DIPERBARUI MENGGUNAKAN KARTU
+# HEADER
 # =====================================================
 st.markdown("""
 <div class="card hero-card">
@@ -198,9 +236,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-
 # =====================================================
-# INPUT TEKS - DIPERBARUI MENGGUNAKAN KARTU
+# INPUT TEKS
 # =====================================================
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown("### Masukkan Ulasan Pengguna")
@@ -212,7 +249,6 @@ input_text = st.text_area(
     label_visibility="collapsed"
 )
 
-# Kolom untuk memusatkan tombol
 col1, col2, col3 = st.columns([1, 2, 1])
 with col2:
     if st.button("🔍 Prediksi Sentimen"):
@@ -230,7 +266,6 @@ with col2:
 
             label_text = "Positif" if pred_label == 1 else "Negatif"
 
-            # Simpan riwayat
             st.session_state.history.append({
                 "Ulasan": input_text,
                 "Sentimen": label_text,
@@ -240,17 +275,15 @@ with col2:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-
 # =====================================================
 # PREDIKSI - TAMPILAN HASIL DIPERBARUI
 # =====================================================
-if st.session_state.history: # Cek jika ada prediksi yang sudah dilakukan
+if st.session_state.history:
     last_result = st.session_state.history[-1]
     
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown("### Hasil Prediksi")
     
-    # Tampilkan hasil dengan gaya kustom
     result_icon = "😊" if last_result["Sentimen"] == "Positif" else "😞"
     result_class = "result-positive" if last_result["Sentimen"] == "Positif" else "result-negative"
     
@@ -262,21 +295,25 @@ if st.session_state.history: # Cek jika ada prediksi yang sudah dilakukan
 
     st.markdown("#### Probabilitas Prediksi")
     
-    # Menggunakan metrik untuk tampilan yang lebih rapi
-    col_pos, col_neg = st.columns(2)
-    with col_pos:
-        st.metric(label="Positif", value=f"{last_result['Probabilitas Positif (%)']:.2f}%")
-        st.progress(last_result['Probabilitas Positif (%)'] / 100)
-        
-    with col_neg:
-        st.metric(label="Negatif", value=f"{last_result['Probabilitas Negatif (%)']:.2f}%")
-        st.progress(last_result['Probabilitas Negatif (%)'] / 100)
+    # --- TAMPILAN BAR PROBABILITAS GABUNGAN ---
+    prob_pos = last_result['Probabilitas Positif (%)']
+    prob_neg = last_result['Probabilitas Negatif (%)']
+    
+    st.markdown(f"""
+    <div class="prob-container">
+        <div class="prob-positive" style="width: {prob_pos}%;">
+            {prob_pos:.1f}%
+        </div>
+        <div class="prob-negative" style="width: {prob_neg}%;">
+            {prob_neg:.1f}%
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
         
     st.markdown('</div>', unsafe_allow_html=True)
 
-
 # =====================================================
-# RIWAYAT PREDIKSI - TABEL DIPERBARUI
+# RIWAYAT PREDIKSI - TABEL DIPERBAIKI
 # =====================================================
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown("### Riwayat Prediksi")
@@ -284,21 +321,24 @@ st.markdown("### Riwayat Prediksi")
 if st.session_state.history:
     df_history = pd.DataFrame(st.session_state.history)
     
-    # Mewarnai tabel berdasarkan sentimen
-    def highlight_sentiment(s):
-        is_positive = s['Sentimen'] == 'Positif'
-        return [
-            'background-color: #c6f6d5' if is_positive else 'background-color: #fed7d7'
-            for v in is_positive
-        ]
+    # --- FUNGSI HIGHLIGHT YANG SUDAH DIPERBAIKI ---
+    def highlight_sentiment(row):
+        # Tentukan warna berdasarkan kolom 'Sentimen'
+        if row['Sentimen'] == 'Positif':
+            color = '#b8f5d1'  # Hijau muda
+        else:
+            color = '#ffcdd2'  # Merah muda
+        
+        # Kembalikan list dengan warna yang sama untuk setiap kolom di baris tersebut
+        return [f'background-color: {color}; font-weight: 500;'] * len(row)
     
+    # Terapkan fungsi ke setiap baris (axis=1)
     styled_df = df_history.style.apply(highlight_sentiment, axis=1)
     
     st.markdown('<div class="dataframe-container">', unsafe_allow_html=True)
     st.dataframe(styled_df, use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
     
-    # Tombol hapus riwayat dengan kustomisasi
     st.markdown('<div class="secondary-btn-container">', unsafe_allow_html=True)
     if st.button("🗑️ Hapus Riwayat"):
         st.session_state.history = []
@@ -309,9 +349,8 @@ else:
     
 st.markdown('</div>', unsafe_allow_html=True)
 
-
 # =====================================================
-# FOOTER - DIPERBARUI
+# FOOTER
 # =====================================================
 st.markdown("""
 <div class="card" style="text-align: center; background-color: #edf2f7;">
