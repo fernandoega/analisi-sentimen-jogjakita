@@ -21,26 +21,25 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* Background utama */
+    /* ===== GLOBAL ===== */
     .stApp {
         background-color: #ffffff;
         color: #000000;
     }
 
-    /* Semua teks */
     h1, h2, h3, h4, h5, h6, p, span, label {
         color: #000000 !important;
     }
 
-    /* Subtitle / deskripsi metode */
+    /* ===== SUBTITLE ===== */
     .subtitle {
-        font-size: 30px;
+        font-size: 22px;
         font-weight: 500;
         color: #333333;
         margin-top: 4px;
     }
 
-    /* Text area & input */
+    /* ===== INPUT ===== */
     textarea, input {
         background-color: #f9f9f9 !important;
         color: #000000 !important;
@@ -48,12 +47,11 @@ st.markdown(
         border-radius: 8px !important;
     }
 
-    /* KURSOR TEKS (INI YANG KAMU MINTA) */
     textarea {
         caret-color: #000000 !important;
     }
 
-    /* Tombol */
+    /* ===== BUTTON ===== */
     div.stButton > button {
         background-color: #e53935 !important;
         color: white !important;
@@ -66,27 +64,49 @@ st.markdown(
     div.stButton > button:hover {
         background-color: #c62828 !important;
     }
-    /* ===== HILANGKAN BAR HITAM STREAMLIT CLOUD ===== */
 
-/* Toolbar atas */
-div[data-testid="stToolbar"] {
-    display: none !important;
-}
+    /* ===== CARD ===== */
+    .card {
+        background-color: #ffffff;
+        padding: 24px 28px;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+        margin-bottom: 28px;
+    }
 
-/* Header utama */
-header[data-testid="stHeader"] {
-    display: none !important;
-}
+    .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
 
-/* Decoration / Deploy bar */
-div[data-testid="stDecoration"] {
-    display: none !important;
-}
+    /* ===== RESULT ===== */
+    .result-positive {
+        background-color: #e8f5e9;
+        border-left: 6px solid #2e7d32;
+        padding: 16px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
 
-/* Hilangkan padding atas bawaan */
-.block-container {
-    padding-top: 0rem !important;
-}
+    .result-negative {
+        background-color: #ffebee;
+        border-left: 6px solid #c62828;
+        padding: 16px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+    }
+
+    /* ===== HILANGKAN BAR STREAMLIT CLOUD ===== */
+    div[data-testid="stToolbar"],
+    header[data-testid="stHeader"],
+    div[data-testid="stDecoration"] {
+        display: none !important;
+    }
+
+    .block-container {
+        padding-top: 0rem !important;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -107,19 +127,15 @@ model, vectorizer = load_model()
 # PREPROCESSING
 # =====================================================
 stemmer = StemmerFactory().create_stemmer()
-
 stop_factory = StopWordRemoverFactory()
 stopwords = set(stop_factory.get_stop_words())
-stopwords.update({"nya","sih","kok","lah","dong","nih","deh","banget","ya","pun"})
+stopwords.update({"nya", "sih", "kok", "lah", "dong", "nih", "deh", "banget", "ya", "pun"})
 
 def preprocess(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
-
-    tokens = [stemmer.stem(w) for w in text.split()
-              if w not in stopwords and len(w) > 2]
-
+    tokens = [stemmer.stem(w) for w in text.split() if w not in stopwords and len(w) > 2]
     return " ".join(tokens)
 
 # =====================================================
@@ -140,7 +156,7 @@ with col2:
     st.markdown(
         """
         <h2>Analisis Sentimen Ulasan JogjaKita</h2>
-        <p class=".subtitle">
+        <p class="subtitle">
             Menggunakan Algoritma <b>Support Vector Machine (SVM)</b>
         </p>
         """,
@@ -150,9 +166,10 @@ with col2:
 st.divider()
 
 # =====================================================
-# INPUT TEKS
+# INPUT
 # =====================================================
-st.subheader("Masukkan Ulasan Pengguna")
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("<div class='section-title'>📝 Masukkan Ulasan Pengguna</div>", unsafe_allow_html=True)
 
 input_text = st.text_area(
     "Contoh: Aplikasi JogjaKita sangat membantu dan drivernya ramah",
@@ -160,10 +177,12 @@ input_text = st.text_area(
     placeholder="Ketik ulasan pengguna di sini..."
 )
 
+st.markdown("</div>", unsafe_allow_html=True)
+
 # =====================================================
 # PREDIKSI
 # =====================================================
-if st.button("Prediksi Sentimen"):
+if st.button("🔍 Prediksi Sentimen"):
     if input_text.strip() == "":
         st.warning("Silakan masukkan teks ulasan terlebih dahulu.")
     else:
@@ -178,7 +197,6 @@ if st.button("Prediksi Sentimen"):
 
         label_text = "Positif" if pred_label == 1 else "Negatif"
 
-        # Simpan riwayat
         st.session_state.history.append({
             "Ulasan": input_text,
             "Sentimen": label_text,
@@ -186,54 +204,58 @@ if st.button("Prediksi Sentimen"):
             "Probabilitas Negatif (%)": round(prob_negatif, 2)
         })
 
-        st.divider()
-        st.subheader("Hasil Prediksi")
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>📌 Hasil Prediksi</div>", unsafe_allow_html=True)
 
         if pred_label == 1:
-            st.success("Sentimen Positif")
+            st.markdown(
+                f"""
+                <div class="result-positive">
+                    ✅ <b>Sentimen Positif</b><br>
+                    Probabilitas Positif: {prob_positif:.2f}%
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            st.progress(prob_positif / 100)
         else:
-            st.error("Sentimen Negatif")
+            st.markdown(
+                f"""
+                <div class="result-negative">
+                    ❌ <b>Sentimen Negatif</b><br>
+                    Probabilitas Negatif: {prob_negatif:.2f}%
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            st.progress(prob_negatif / 100)
 
-        st.markdown("### Probabilitas Prediksi")
-        st.write(f"**Positif : {prob_positif:.2f}%**")
-        st.progress(prob_positif / 100)
-
-        st.write(f"**Negatif : {prob_negatif:.2f}%**")
-        st.progress(prob_negatif / 100)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # =====================================================
-# RIWAYAT PREDIKSI
+# RIWAYAT
 # =====================================================
-st.divider()
-st.subheader("Riwayat Prediksi")
+st.markdown("<div class='card'>", unsafe_allow_html=True)
+st.markdown("<div class='section-title'>🗂️ Riwayat Prediksi</div>", unsafe_allow_html=True)
 
 if st.session_state.history:
     df_history = pd.DataFrame(st.session_state.history)
     st.dataframe(df_history, use_container_width=True)
 
-    if st.button("Hapus Riwayat"):
+    if st.button("🧹 Hapus Riwayat"):
         st.session_state.history = []
         st.rerun()
 else:
     st.info("Belum ada riwayat prediksi.")
 
+st.markdown("</div>", unsafe_allow_html=True)
+
 # =====================================================
 # FOOTER
 # =====================================================
-st.divider()
 st.caption("""
-ℹ️ **Informasi Model**
-- Algoritma : Support Vector Machine 
-- Ekstraksi Fitur : TF-IDF 
-- Dataset : Google Play Store – Aplikasi JogjaKita
+ℹ️ **Informasi Model**  
+- Algoritma : Support Vector Machine (Kernel RBF)  
+- Ekstraksi Fitur : TF-IDF  
+- Dataset : Google Play Store – Aplikasi JogjaKita  
 """)
-
-
-
-
-
-
-
-
-
-
