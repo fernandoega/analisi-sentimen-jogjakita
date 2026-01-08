@@ -164,6 +164,22 @@ with col2:
     )
 
 st.divider()
+st.markdown(
+    """
+    <div class="card">
+        <div class="section-title">📘 Deskripsi Sistem</div>
+        <p style="font-size:16px; line-height:1.7; color:#444;">
+        Sistem ini digunakan untuk menganalisis sentimen ulasan pengguna aplikasi
+        <b>JogjaKita</b> menjadi sentimen <b>positif</b> atau <b>negatif</b>
+        menggunakan algoritma <b>Support Vector Machine (SVM)</b>.
+        <br><br>
+        Pengguna dapat memasukkan satu ulasan pada kolom yang tersedia untuk
+        memperoleh hasil prediksi sentimen secara otomatis.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # =====================================================
 # INPUT
@@ -259,3 +275,4 @@ st.caption("""
 - Ekstraksi Fitur : TF-IDF  
 - Dataset : Google Play Store – Aplikasi JogjaKita  
 """)
+
