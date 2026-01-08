@@ -16,91 +16,40 @@ st.set_page_config(
 )
 
 # =====================================================
-# MODERN CSS + ANIMATION
+# GLOBAL STYLE (MINIMAL & AMAN)
 # =====================================================
 st.markdown(
     """
     <style>
-    /* RESET */
-    .stApp { background: #f4f6f8; }
-
-    /* HIDE STREAMLIT UI */
-    header, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {
-        display: none !important;
+    .stApp {
+        background-color: #f7f8fa;
     }
 
-    /* HERO */
-    .hero {
-        background: linear-gradient(135deg, #e53935, #c62828);
-        padding: 36px;
-        border-radius: 20px;
-        color: white;
-        margin-bottom: 30px;
-        animation: fadeDown 0.8s ease;
+    h1, h2, h3 {
+        color: #111111;
     }
 
-    .hero h1 {
-        font-size: 34px;
-        margin-bottom: 8px;
+    p {
+        color: #444444;
     }
 
-    .hero p {
-        font-size: 18px;
-        opacity: 0.95;
-    }
-
-    /* CARD */
-    .card {
-        background: white;
-        padding: 28px;
-        border-radius: 18px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.08);
-        margin-bottom: 26px;
-        animation: fadeUp 0.6s ease;
-    }
-
-    /* BUTTON */
+    /* Button */
     div.stButton > button {
-        background: linear-gradient(135deg, #e53935, #c62828);
+        background-color: #e53935;
         color: white;
-        border-radius: 10px;
-        padding: 0.6em 1.6em;
+        border-radius: 8px;
+        padding: 0.55em 1.4em;
         font-weight: 600;
         border: none;
-        transition: all 0.25s ease;
     }
 
     div.stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(229,57,53,0.45);
+        background-color: #c62828;
     }
 
-    /* RESULT */
-    .positive {
-        background: #e8f5e9;
-        border-left: 6px solid #2e7d32;
-        padding: 16px;
-        border-radius: 12px;
-        margin-top: 10px;
-    }
-
-    .negative {
-        background: #ffebee;
-        border-left: 6px solid #c62828;
-        padding: 16px;
-        border-radius: 12px;
-        margin-top: 10px;
-    }
-
-    /* ANIMATION */
-    @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeDown {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
+    /* Hide Streamlit cloud bar */
+    header, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {
+        display: none !important;
     }
     </style>
     """,
@@ -112,12 +61,14 @@ st.markdown(
 # =====================================================
 @st.cache_resource
 def load_model():
-    return joblib.load("svm_model.pkl"), joblib.load("tfidf_vectorizer.pkl")
+    model = joblib.load("svm_model.pkl")
+    vectorizer = joblib.load("tfidf_vectorizer.pkl")
+    return model, vectorizer
 
 model, vectorizer = load_model()
 
 # =====================================================
-# PREPROCESS
+# PREPROCESSING
 # =====================================================
 stemmer = StemmerFactory().create_stemmer()
 stopwords = set(StopWordRemoverFactory().get_stop_words())
@@ -139,35 +90,35 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # =====================================================
-# HERO SECTION
+# HEADER (DASHBOARD STYLE)
 # =====================================================
-st.markdown(
-    """
-    <div class="hero">
-        <h1>📊 Analisis Sentimen JogjaKita</h1>
-        <p>Menggunakan Support Vector Machine (SVM)</p>
-    </div>
-    """,
-    unsafe_allow_html=True
+col1, col2 = st.columns([1, 6])
+
+with col1:
+    st.image("logo.png", width=90)
+
+with col2:
+    st.title("Analisis Sentimen Ulasan JogjaKita")
+    st.caption("Menggunakan Algoritma Support Vector Machine (SVM)")
+
+st.divider()
+
+# =====================================================
+# DESKRIPSI SISTEM
+# =====================================================
+st.info(
+    "Sistem ini menganalisis sentimen ulasan pengguna aplikasi **JogjaKita** "
+    "menjadi **positif** atau **negatif** menggunakan algoritma "
+    "**Support Vector Machine (SVM)** berbasis fitur **TF-IDF**."
 )
 
 # =====================================================
-# INPUT CARD
+# INPUT
 # =====================================================
-st.markdown(
-    """
-    <div class="card">
-        <h3>📝 Masukkan Ulasan Pengguna</h3>
-        <p style="color:#555;">
-        Contoh: Aplikasi JogjaKita sangat membantu dan drivernya ramah
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+st.subheader("📝 Masukkan Ulasan Pengguna")
 
 input_text = st.text_area(
-    "",
+    "Contoh: Aplikasi JogjaKita sangat membantu dan drivernya ramah",
     height=120,
     placeholder="Ketik ulasan pengguna di sini..."
 )
@@ -180,50 +131,51 @@ if st.button("🔍 Prediksi Sentimen"):
         st.warning("Silakan masukkan teks ulasan terlebih dahulu.")
     else:
         clean = preprocess(input_text)
-        vec = vectorizer.transform([clean])
-        pred = model.predict(vec)[0]
-        proba = model.predict_proba(vec)[0]
+        vector = vectorizer.transform([clean])
 
-        pos, neg = proba[1]*100, proba[0]*100
-        label = "Positif" if pred == 1 else "Negatif"
+        pred = model.predict(vector)[0]
+        proba = model.predict_proba(vector)[0]
 
-        st.session_state.history.append({
-            "Ulasan": input_text,
-            "Sentimen": label,
-            "Positif (%)": round(pos,2),
-            "Negatif (%)": round(neg,2)
-        })
+        pos = proba[1] * 100
+        neg = proba[0] * 100
 
-        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.divider()
         st.subheader("📌 Hasil Prediksi")
 
         if pred == 1:
-            st.markdown(
-                f"<div class='positive'>✅ <b>Sentimen Positif</b><br>Probabilitas: {pos:.2f}%</div>",
-                unsafe_allow_html=True
-            )
-            st.progress(pos/100)
+            st.success(f"Sentimen Positif ({pos:.2f}%)")
+            st.progress(pos / 100)
         else:
-            st.markdown(
-                f"<div class='negative'>❌ <b>Sentimen Negatif</b><br>Probabilitas: {neg:.2f}%</div>",
-                unsafe_allow_html=True
-            )
-            st.progress(neg/100)
+            st.error(f"Sentimen Negatif ({neg:.2f}%)")
+            st.progress(neg / 100)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.session_state.history.append({
+            "Ulasan": input_text,
+            "Sentimen": "Positif" if pred == 1 else "Negatif",
+            "Probabilitas Positif (%)": round(pos, 2),
+            "Probabilitas Negatif (%)": round(neg, 2)
+        })
 
 # =====================================================
 # RIWAYAT
 # =====================================================
+st.divider()
+st.subheader("🗂️ Riwayat Prediksi")
+
 if st.session_state.history:
-    st.markdown("<div class='card'>", unsafe_allow_html=True)
-    st.subheader("🗂️ Riwayat Prediksi")
-    st.dataframe(pd.DataFrame(st.session_state.history), use_container_width=True)
-    st.markdown("</div>", unsafe_allow_html=True)
+    df = pd.DataFrame(st.session_state.history)
+    st.dataframe(df, use_container_width=True)
+
+    if st.button("🧹 Hapus Riwayat"):
+        st.session_state.history = []
+        st.rerun()
+else:
+    st.info("Belum ada riwayat prediksi.")
 
 # =====================================================
 # FOOTER
 # =====================================================
 st.caption(
-    "ℹ️ Model: SVM (Kernel RBF) | Fitur: TF-IDF | Dataset: Google Play Store – JogjaKita"
+    "ℹ️ Model: SVM (Kernel RBF) | Fitur: TF-IDF | "
+    "Dataset: Google Play Store – Aplikasi JogjaKita"
 )
