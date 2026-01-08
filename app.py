@@ -7,7 +7,7 @@ from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
 from Sastrawi.StopWordRemover.StopWordRemoverFactory import StopWordRemoverFactory
 
 # =====================================================
-# PAGE CONFIG
+# KONFIGURASI HALAMAN
 # =====================================================
 st.set_page_config(
     page_title="Analisis Sentimen JogjaKita",
@@ -16,48 +16,84 @@ st.set_page_config(
 )
 
 # =====================================================
-# GLOBAL STYLE (MINIMAL & AMAN)
+# STYLE (CSS)
 # =====================================================
 st.markdown(
     """
     <style>
+    /* Background utama */
     .stApp {
-        background-color: #f7f8fa;
+        background-color: #ffffff;
+        color: #000000;
     }
 
-    h1, h2, h3 {
-        color: #111111;
+    /* Semua teks */
+    h1, h2, h3, h4, h5, h6, p, span, label {
+        color: #000000 !important;
     }
 
-    p {
-        color: #444444;
+    /* Subtitle / deskripsi metode */
+    .subtitle {
+        font-size: 30px;
+        font-weight: 500;
+        color: #333333;
+        margin-top: 4px;
     }
 
-    /* Button */
+    /* Text area & input */
+    textarea, input {
+        background-color: #f9f9f9 !important;
+        color: #000000 !important;
+        border: 1px solid #cccccc !important;
+        border-radius: 8px !important;
+    }
+
+    /* KURSOR TEKS (INI YANG KAMU MINTA) */
+    textarea {
+        caret-color: #000000 !important;
+    }
+
+    /* Tombol */
     div.stButton > button {
-        background-color: #e53935;
-        color: white;
+        background-color: #e53935 !important;
+        color: white !important;
         border-radius: 8px;
-        padding: 0.55em 1.4em;
-        font-weight: 600;
+        padding: 0.5em 1.2em;
         border: none;
+        font-weight: 600;
     }
 
     div.stButton > button:hover {
-        background-color: #c62828;
+        background-color: #c62828 !important;
     }
+    /* ===== HILANGKAN BAR HITAM STREAMLIT CLOUD ===== */
 
-    /* Hide Streamlit cloud bar */
-    header, footer, [data-testid="stToolbar"], [data-testid="stDecoration"] {
-        display: none !important;
-    }
+/* Toolbar atas */
+div[data-testid="stToolbar"] {
+    display: none !important;
+}
+
+/* Header utama */
+header[data-testid="stHeader"] {
+    display: none !important;
+}
+
+/* Decoration / Deploy bar */
+div[data-testid="stDecoration"] {
+    display: none !important;
+}
+
+/* Hilangkan padding atas bawaan */
+.block-container {
+    padding-top: 0rem !important;
+}
     </style>
     """,
     unsafe_allow_html=True
 )
 
 # =====================================================
-# LOAD MODEL
+# LOAD MODEL & TF-IDF
 # =====================================================
 @st.cache_resource
 def load_model():
@@ -71,17 +107,20 @@ model, vectorizer = load_model()
 # PREPROCESSING
 # =====================================================
 stemmer = StemmerFactory().create_stemmer()
-stopwords = set(StopWordRemoverFactory().get_stop_words())
+
+stop_factory = StopWordRemoverFactory()
+stopwords = set(stop_factory.get_stop_words())
 stopwords.update({"nya","sih","kok","lah","dong","nih","deh","banget","ya","pun"})
 
 def preprocess(text):
     text = text.lower()
     text = re.sub(r"[^a-zA-Z\s]", " ", text)
     text = re.sub(r"\s+", " ", text).strip()
-    return " ".join(
-        stemmer.stem(w) for w in text.split()
-        if w not in stopwords and len(w) > 2
-    )
+
+    tokens = [stemmer.stem(w) for w in text.split()
+              if w not in stopwords and len(w) > 2]
+
+    return " ".join(tokens)
 
 # =====================================================
 # SESSION STATE
@@ -90,32 +129,30 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 # =====================================================
-# HEADER (DASHBOARD STYLE)
+# HEADER
 # =====================================================
-col1, col2 = st.columns([1, 6])
+col1, col2 = st.columns([1, 5])
 
 with col1:
-    st.image("logo.png", width=90)
+    st.image("logo.png", width=110)
 
 with col2:
-    st.title("Analisis Sentimen Ulasan JogjaKita")
-    st.caption("Menggunakan Algoritma Support Vector Machine (SVM)")
+    st.markdown(
+        """
+        <h2>Analisis Sentimen Ulasan JogjaKita</h2>
+        <p class=".subtitle">
+            Menggunakan Algoritma <b>Support Vector Machine (SVM)</b>
+        </p>
+        """,
+        unsafe_allow_html=True
+    )
 
 st.divider()
 
 # =====================================================
-# DESKRIPSI SISTEM
+# INPUT TEKS
 # =====================================================
-st.info(
-    "Sistem ini menganalisis sentimen ulasan pengguna aplikasi **JogjaKita** "
-    "menjadi **positif** atau **negatif** menggunakan algoritma "
-    "**Support Vector Machine (SVM)** berbasis fitur **TF-IDF**."
-)
-
-# =====================================================
-# INPUT
-# =====================================================
-st.subheader("📝 Masukkan Ulasan Pengguna")
+st.subheader("Masukkan Ulasan Pengguna")
 
 input_text = st.text_area(
     "Contoh: Aplikasi JogjaKita sangat membantu dan drivernya ramah",
@@ -126,47 +163,55 @@ input_text = st.text_area(
 # =====================================================
 # PREDIKSI
 # =====================================================
-if st.button("🔍 Prediksi Sentimen"):
-    if not input_text.strip():
+if st.button("Prediksi Sentimen"):
+    if input_text.strip() == "":
         st.warning("Silakan masukkan teks ulasan terlebih dahulu.")
     else:
-        clean = preprocess(input_text)
-        vector = vectorizer.transform([clean])
+        clean_text = preprocess(input_text)
+        vector = vectorizer.transform([clean_text])
 
-        pred = model.predict(vector)[0]
+        pred_label = model.predict(vector)[0]
         proba = model.predict_proba(vector)[0]
 
-        pos = proba[1] * 100
-        neg = proba[0] * 100
+        prob_negatif = proba[0] * 100
+        prob_positif = proba[1] * 100
 
-        st.divider()
-        st.subheader("📌 Hasil Prediksi")
+        label_text = "Positif" if pred_label == 1 else "Negatif"
 
-        if pred == 1:
-            st.success(f"Sentimen Positif ({pos:.2f}%)")
-            st.progress(pos / 100)
-        else:
-            st.error(f"Sentimen Negatif ({neg:.2f}%)")
-            st.progress(neg / 100)
-
+        # Simpan riwayat
         st.session_state.history.append({
             "Ulasan": input_text,
-            "Sentimen": "Positif" if pred == 1 else "Negatif",
-            "Probabilitas Positif (%)": round(pos, 2),
-            "Probabilitas Negatif (%)": round(neg, 2)
+            "Sentimen": label_text,
+            "Probabilitas Positif (%)": round(prob_positif, 2),
+            "Probabilitas Negatif (%)": round(prob_negatif, 2)
         })
 
+        st.divider()
+        st.subheader("Hasil Prediksi")
+
+        if pred_label == 1:
+            st.success("Sentimen Positif")
+        else:
+            st.error("Sentimen Negatif")
+
+        st.markdown("### Probabilitas Prediksi")
+        st.write(f"**Positif : {prob_positif:.2f}%**")
+        st.progress(prob_positif / 100)
+
+        st.write(f"**Negatif : {prob_negatif:.2f}%**")
+        st.progress(prob_negatif / 100)
+
 # =====================================================
-# RIWAYAT
+# RIWAYAT PREDIKSI
 # =====================================================
 st.divider()
-st.subheader("🗂️ Riwayat Prediksi")
+st.subheader("Riwayat Prediksi")
 
 if st.session_state.history:
-    df = pd.DataFrame(st.session_state.history)
-    st.dataframe(df, use_container_width=True)
+    df_history = pd.DataFrame(st.session_state.history)
+    st.dataframe(df_history, use_container_width=True)
 
-    if st.button("🧹 Hapus Riwayat"):
+    if st.button("Hapus Riwayat"):
         st.session_state.history = []
         st.rerun()
 else:
@@ -175,7 +220,11 @@ else:
 # =====================================================
 # FOOTER
 # =====================================================
-st.caption(
-    "ℹ️ Model: SVM (Kernel RBF) | Fitur: TF-IDF | "
-    "Dataset: Google Play Store – Aplikasi JogjaKita"
-)
+st.divider()
+st.caption("""
+ℹ️ **Informasi Model**
+- Algoritma : Support Vector Machine 
+- Ekstraksi Fitur : TF-IDF 
+- Dataset : Google Play Store – Aplikasi JogjaKita
+""")
+
